@@ -1,0 +1,8 @@
+py -m venv env
+env\Scripts\activate
+pip install fastapi uvicorn
+uvicorn main:app --reload
+
+pip install -r requerimientos.txt
+
+conexion a oracle https://www.youtube.com/watch?v=r8ez6KbaD58&ab_channel=UskoKruM2010
