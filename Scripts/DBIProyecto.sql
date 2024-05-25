@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 12c                           */
-/* Created on:     25/05/2024 10:34:54 a. m.                    */
+/* Created on:     25/05/2024 1:14:17 p. m.                     */
 /*==============================================================*/
 
 
@@ -95,16 +95,13 @@ alter table PROCESOREQUERIMIENTO
    drop constraint FK_PROCESOR_PFTOPR_PERFILFA;
 
 alter table PROCESOREQUERIMIENTO
-   drop constraint FK_PROCESOR_PTOPR2_PRUEBA;
-
-alter table PROCESOREQUERIMIENTO
    drop constraint FK_PROCESOR_RTOPR_REQUERIM;
 
 alter table PRUEBA
    drop constraint FK_PRUEBA_DISCIPLIN_DISCIPLI;
 
 alter table PRUEBA
-   drop constraint FK_PRUEBA_PTOPR_PROCESOR;
+   drop constraint FK_PRUEBA_RELATIONS_FASE;
 
 alter table PRUEBA
    drop constraint FK_PRUEBA_TIPOPRUEB_TIPOPRUE;
@@ -113,7 +110,7 @@ alter table PRUEBACANDIDATO
    drop constraint FK_PRUEBACA_PCTOPRC_PROCESOC;
 
 alter table PRUEBACANDIDATO
-   drop constraint FK_PRUEBACA_PRTOPCA_PROCESOR;
+   drop constraint FK_PRUEBACA_RELATIONS_PRUEBA;
 
 alter table REQUERIMIENTO
    drop constraint FK_REQUERIM_ETOR_EMPLEADO;
@@ -225,23 +222,21 @@ drop table PROCESOCANDIDATO cascade constraints;
 
 drop index PFTOPR_FK;
 
-drop index PTOPR2_FK;
-
 drop index ETOPR_FK;
 
 drop index RTOPR_FK;
 
 drop table PROCESOREQUERIMIENTO cascade constraints;
 
+drop index RELATIONSHIP_41_FK;
+
 drop index TIPOPRUEBATOPRUEBA_FK;
 
 drop index DISCIPLINA_FK;
 
-drop index PTOPR_FK;
-
 drop table PRUEBA cascade constraints;
 
-drop index PRTOPCA_FK;
+drop index RELATIONSHIP_40_FK;
 
 drop index PCTOPRC_FK;
 
@@ -707,7 +702,6 @@ create table PROCESOREQUERIMIENTO (
    IDPERFIL             VARCHAR2(4)           not null,
    CONSPROCESO          NUMBER(5,0)           not null,
    CODEMPLEADO          VARCHAR2(5),
-   IDPRUEBA             VARCHAR2(5),
    FECHAINICIO          DATE,
    FECHAFIN             DATE,
    CONVOCATORIA         VARCHAR2(200),
@@ -730,13 +724,6 @@ create index ETOPR_FK on PROCESOREQUERIMIENTO (
 );
 
 /*==============================================================*/
-/* Index: PTOPR2_FK                                             */
-/*==============================================================*/
-create index PTOPR2_FK on PROCESOREQUERIMIENTO (
-   IDPRUEBA ASC
-);
-
-/*==============================================================*/
 /* Index: PFTOPR_FK                                             */
 /*==============================================================*/
 create index PFTOPR_FK on PROCESOREQUERIMIENTO (
@@ -750,25 +737,12 @@ create index PFTOPR_FK on PROCESOREQUERIMIENTO (
 create table PRUEBA (
    IDPRUEBA             VARCHAR2(5)           not null,
    IDTIPOPRUEBA         VARCHAR2(2)           not null,
-   CONSECREQUE          NUMBER(5,0),
-   IDFASE               VARCHAR2(4),
-   IDPERFIL             VARCHAR2(4),
-   CONSPROCESO          NUMBER(5,0),
    IDDISCIPLINA         VARCHAR2(4),
+   IDFASE               VARCHAR2(4)           not null,
    DESCPRUEBA           VARCHAR2(30)          not null,
    PRUEBAACTIVA         SMALLINT              not null,
    FECHACREADA          DATE,
    constraint PK_PRUEBA primary key (IDPRUEBA)
-);
-
-/*==============================================================*/
-/* Index: PTOPR_FK                                              */
-/*==============================================================*/
-create index PTOPR_FK on PRUEBA (
-   CONSECREQUE ASC,
-   IDFASE ASC,
-   IDPERFIL ASC,
-   CONSPROCESO ASC
 );
 
 /*==============================================================*/
@@ -786,19 +760,23 @@ create index TIPOPRUEBATOPRUEBA_FK on PRUEBA (
 );
 
 /*==============================================================*/
+/* Index: RELATIONSHIP_41_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_41_FK on PRUEBA (
+   IDFASE ASC
+);
+
+/*==============================================================*/
 /* Table: PRUEBACANDIDATO                                       */
 /*==============================================================*/
 create table PRUEBACANDIDATO (
    CONSEPRUEBACANDI     NUMBER(5,0)           not null,
-   CONSECREQUE          NUMBER(5,0),
-   IDFASE               VARCHAR2(4),
-   IDPERFIL             VARCHAR2(4),
-   CONSPROCESO          NUMBER(5,0),
+   IDPRUEBA             VARCHAR2(5),
    USUARIO              VARCHAR2(30)          not null,
-   PRO_CONSECREQUE      NUMBER(5,0)           not null,
-   PRO_IDFASE           VARCHAR2(4)           not null,
-   PRO_IDPERFIL         VARCHAR2(4)           not null,
-   PRO_CONSPROCESO      NUMBER(5,0)           not null,
+   CONSECREQUE          NUMBER(5,0)           not null,
+   IDFASE               VARCHAR2(4)           not null,
+   IDPERFIL             VARCHAR2(4)           not null,
+   CONSPROCESO          NUMBER(5,0)           not null,
    FECHAPRES            DATE                  not null,
    CALIFICACION         NUMBER(3,1),
    constraint PK_PRUEBACANDIDATO primary key (CONSEPRUEBACANDI)
@@ -809,20 +787,17 @@ create table PRUEBACANDIDATO (
 /*==============================================================*/
 create index PCTOPRC_FK on PRUEBACANDIDATO (
    USUARIO ASC,
-   PRO_CONSECREQUE ASC,
-   PRO_IDFASE ASC,
-   PRO_IDPERFIL ASC,
-   PRO_CONSPROCESO ASC
-);
-
-/*==============================================================*/
-/* Index: PRTOPCA_FK                                            */
-/*==============================================================*/
-create index PRTOPCA_FK on PRUEBACANDIDATO (
    CONSECREQUE ASC,
    IDFASE ASC,
    IDPERFIL ASC,
    CONSPROCESO ASC
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_40_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_40_FK on PRUEBACANDIDATO (
+   IDPRUEBA ASC
 );
 
 /*==============================================================*/
@@ -1088,10 +1063,6 @@ alter table PROCESOREQUERIMIENTO
       references PERFILFASE (IDFASE, IDPERFIL);
 
 alter table PROCESOREQUERIMIENTO
-   add constraint FK_PROCESOR_PTOPR2_PRUEBA foreign key (IDPRUEBA)
-      references PRUEBA (IDPRUEBA);
-
-alter table PROCESOREQUERIMIENTO
    add constraint FK_PROCESOR_RTOPR_REQUERIM foreign key (CONSECREQUE)
       references REQUERIMIENTO (CONSECREQUE);
 
@@ -1100,20 +1071,20 @@ alter table PRUEBA
       references DISCIPLINA (IDDISCIPLINA);
 
 alter table PRUEBA
-   add constraint FK_PRUEBA_PTOPR_PROCESOR foreign key (CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO)
-      references PROCESOREQUERIMIENTO (CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO);
+   add constraint FK_PRUEBA_RELATIONS_FASE foreign key (IDFASE)
+      references FASE (IDFASE);
 
 alter table PRUEBA
    add constraint FK_PRUEBA_TIPOPRUEB_TIPOPRUE foreign key (IDTIPOPRUEBA)
       references TIPOPRUEBA (IDTIPOPRUEBA);
 
 alter table PRUEBACANDIDATO
-   add constraint FK_PRUEBACA_PCTOPRC_PROCESOC foreign key (USUARIO, PRO_CONSECREQUE, PRO_IDFASE, PRO_IDPERFIL, PRO_CONSPROCESO)
+   add constraint FK_PRUEBACA_PCTOPRC_PROCESOC foreign key (USUARIO, CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO)
       references PROCESOCANDIDATO (USUARIO, CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO);
 
 alter table PRUEBACANDIDATO
-   add constraint FK_PRUEBACA_PRTOPCA_PROCESOR foreign key (CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO)
-      references PROCESOREQUERIMIENTO (CONSECREQUE, IDFASE, IDPERFIL, CONSPROCESO);
+   add constraint FK_PRUEBACA_RELATIONS_PRUEBA foreign key (IDPRUEBA)
+      references PRUEBA (IDPRUEBA);
 
 alter table REQUERIMIENTO
    add constraint FK_REQUERIM_ETOR_EMPLEADO foreign key (EMP_CODEMPLEADO)

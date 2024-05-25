@@ -4,6 +4,7 @@ CREATE SEQUENCE PREGUNTA_SEQ START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
 CREATE SEQUENCE RESPUESTA_SEQ START WITH 1 INCREMENT BY 1 MAXVALUE 999;
 CREATE SEQUENCE ITEMPERFIL_SEQ START WITH 1 INCREMENT BY 1 MAXVALUE 9999;
 CREATE SEQUENCE CARGO_SEQ START WITH 1 INCREMENT BY 1 MAXVALUE 9999;
+CREATE SEQUENCE REQUERIMIENTO_SEQ START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
 
 -- INSERTS TipoContacto
 INSERT INTO tipocontacto(idTipoContacto, descTipoContacto) VALUES('DIR', 'Direccion');
@@ -580,5 +581,20 @@ INSERT INTO respuesta(idPrueba, consePregunta, consecRespuesta, respuesta) VALUE
     INSERT INTO cargo (consecargo, codEmpleado, idTipoCargo, fechaInicioCargo, descCargo)
     VALUES (CARGO_SEQ.NEXTVAL, 'E010', 'ATC', DATE '2018-09-12', ' ');
 
+-- INSERTS Requerimientos
+INSERT INTO requerimiento(consecReque, codEmpleado, fechaReque, salarioMax, desFuncion, desCarreras, nvVacantes) 
+VALUES(REQUERIMIENTO_SEQ.NEXTVaL, 'E001', SYSDATE, 8000, 'Supervisar prácticas de desarrollo de software', 'Relacionadas a arquitectura de software', 4);
+INSERT INTO requerimiento(consecReque, codEmpleado, fechaReque, salarioMax, desFuncion, desCarreras, nvVacantes) 
+VALUES(REQUERIMIENTO_SEQ.NEXTVAL, 'E002', SYSDATE, 7000, 'Implementación de metodologías ágiles', 'Relacionadas a gestión proyectos de software', 5);
+INSERT INTO requerimiento(consecReque, codEmpleado, fechaReque, salarioMax, desFuncion, desCarreras, nvVacantes) 
+VALUES(REQUERIMIENTO_SEQ.NEXTVAL, 'E003', SYSDATE, 10000, 'Desarrollo de algoritmos de análisis de datos', 'Relacionadas a desarrollo matemáticas', 3);
+
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(1, 'RREQ', 'CDS', 1);
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(2, 'RREQ', 'CDS', 1);
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(3, 'RREQ', 'CDS', 1);
+
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(1, 'RREQ', 'CPS', 2);
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(2, 'RREQ', 'CPS', 2);
+INSERT INTO procesorequerimiento(consecReque, idFase, idPerfil, consProceso) VALUES(3, 'RREQ', 'CPS', 2);
 
 
